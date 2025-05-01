@@ -58,7 +58,7 @@ public class FarmerMarketController {
 	}
 	
 	@GetMapping("/farmer/products")
-	public List<FarmerProductDto> getFarmerStock(@RequestParam String farmerName) {
+	public List<ProductInfoDto> getFarmerStock(@RequestParam String farmerName) {
 		// TODO Auto-generated method stub
 		return fmService.getFarmerStock(farmerName);
 	}

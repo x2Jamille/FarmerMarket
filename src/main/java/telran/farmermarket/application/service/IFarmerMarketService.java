@@ -17,7 +17,7 @@ public interface IFarmerMarketService {
 
 	FarmerDto sellProductToClient(String clientEmail, String farmerName, String productName, int quantity);
 
-	List<FarmerProductDto> getFarmerStock(String farmerName);
+	List<ProductInfoDto> getFarmerStock(String farmerName);
 
 	List<FarmerDto> getAllFarmers();
 

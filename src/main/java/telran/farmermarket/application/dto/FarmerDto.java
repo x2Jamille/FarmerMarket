@@ -14,5 +14,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class FarmerDto {
 	private String name;
-	private List<FarmerProductDto> products;
+	private List<ProductInfoDto> products;
 }
