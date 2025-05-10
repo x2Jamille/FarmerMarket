@@ -9,7 +9,7 @@ import telran.farmermarket.application.dto.FarmerDto;
 import telran.farmermarket.application.service.FarmerMarketService;
 import telran.farmermarket.shared.events.UserRegisteredEvent;
 
-import static telran.farmermarket.auth.security.enums.Role.*;
+import static telran.farmermarket.auth.models.Role.*;
 
 import java.util.ArrayList;
 
@@ -29,11 +29,11 @@ public class UserRegistrationListener {
 		
 		
 		
-		if(role.equals(CLIENT.getRole())) {
+		if(role.equals(CLIENT.toString())) {
 			ClientDto dto = new ClientDto(email, name, new ArrayList<>());
 			fmService.addClient(dto);
 		}
-		else if(role.equals(FARMER.getRole())) {
+		else if(role.equals(FARMER.toString())) {
 			FarmerDto dto = new FarmerDto(email, name, new ArrayList<>());
 			fmService.addFarmer(dto);
 		}

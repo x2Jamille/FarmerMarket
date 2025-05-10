@@ -15,11 +15,12 @@ public interface IUserAccountService {
 	UserResponseDto updateUser(String login, UserUpdateDto user);
 
 	boolean updatePassword(String login, String password);
-	boolean revokeAccount(String login);
-	boolean activateAccount(String login);
+//	boolean revokeAccount(String login);
+//	boolean activateAccount(String login);
 	
-	RolesResponseDto addRole(String login, String role);
-	RolesResponseDto removeRole(String login, String role);
+	RolesResponseDto changeRolesList(String login, String role, boolean isAddRole);
+//	RolesResponseDto addRole(String login, String role);
+//	RolesResponseDto removeRole(String login, String role);
 	
 	String getPasswordHash(String login);
 	LocalDateTime getActivationDate(String login);

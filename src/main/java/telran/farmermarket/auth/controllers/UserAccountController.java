@@ -32,7 +32,7 @@ public class UserAccountController {
 		return service.registration(user);
 	}
 
-	@DeleteMapping("/user/{login}")
+	@DeleteMapping("/user")
 	public UserResponseDto removeUser(@PathVariable String login) {
 		return service.removeUser(login);
 	}
@@ -52,24 +52,15 @@ public class UserAccountController {
 		return service.updatePassword(principal.getName(), password);
 	}
 
-	@PutMapping("/revoke/{login}")
-	public boolean revokeAccount(@PathVariable String login) {
-		return service.revokeAccount(login);
-	}
-
-	@PutMapping("/activate/{login}")
-	public boolean activateAccount(@PathVariable String login) {
-		return service.activateAccount(login);
-	}
 
 	@PutMapping("/user/{login}/role/{role}")
 	public RolesResponseDto addRole(@PathVariable String login, @PathVariable String role) {
-		return service.addRole(login, role);
+		return service.changeRolesList(login, role, true);
 	}
 	
 	@DeleteMapping("/user/{login}/role/{role}")
 	public RolesResponseDto removeRole(@PathVariable String login, @PathVariable String role) {
-		return service.removeRole(login, role);
+		return service.changeRolesList(login, role, false);
 	}
 
 	@GetMapping("/password/{login}")

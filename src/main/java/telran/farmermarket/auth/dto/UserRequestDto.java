@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import telran.farmermarket.auth.models.Role;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,5 +15,5 @@ public class UserRequestDto {
 	private String password;
 	private String firstName;
 	private String lastName;
-	private String role;
+	private Role role;
 }
