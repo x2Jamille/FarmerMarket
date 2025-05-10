@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class FarmerDto {
+	private String email;
 	private String name;
 	private List<ProductInfoDto> products;
 }

@@ -25,18 +25,19 @@ public class Farmer {
 	@Id
 	private String id;
 	@Indexed(unique = true)
+	private String email;
 	private String name;
 	private List<ProductInfo> stock;
 
 	public static Farmer of(FarmerDto dto) {
 		List<ProductInfo> stock = dto.getProducts() == null ? new ArrayList<>() : dto.getProducts().stream()
 				.map(pi -> new ProductInfo(pi.getProductId(), pi.getProductName(), pi.getQuantity())).collect(Collectors.toList());
-		return new Farmer(null, dto.getName(), stock);
+		return new Farmer(null, dto.getEmail(), dto.getName(), stock);
 	}
 
 	public FarmerDto build() {
 		List<ProductInfoDto> prods = stock.stream().map(pi -> new ProductInfoDto(pi.getProductId(), pi.getProductName(), pi.getQuantity())).collect(Collectors.toList());
-		return FarmerDto.builder().name(name).products(prods).build();
+		return FarmerDto.builder().email(email).name(name).products(prods).build();
 	}
 	
 	public void addProduct(ProductInfo newProduct) {

@@ -1,5 +1,6 @@
 package telran.farmermarket.application.controllers;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,20 +23,21 @@ import telran.farmermarket.application.service.IFarmerMarketService;
 public class FarmerMarketController {
 
 	final IFarmerMarketService fmService;
-	
-	//TODO Validation
 
-	@PostMapping("/client/add")
-	public ClientDto addClient(@RequestBody ClientDto client) {
-		// TODO Auto-generated method stub
-		return fmService.addClient(client);
-	}
+	// TODO Validation
 
-	@PostMapping("/farmer/add")
-	public FarmerDto addFarmer(@RequestBody FarmerDto farmer) {
-		// TODO Auto-generated method stub
-		return fmService.addFarmer(farmer);
-	}
+//	//FIXME add roles by registration
+//	@PostMapping("/client/add")
+//	public ClientDto addClient(@RequestBody ClientDto client) {
+//		// TODO Auto-generated method stub
+//		return fmService.addClient(client);
+//	}
+//	//FIXME add roles by registration
+//	@PostMapping("/farmer/add")
+//	public FarmerDto addFarmer(@RequestBody FarmerDto farmer) {
+//		// TODO Auto-generated method stub
+//		return fmService.addFarmer(farmer);
+//	}
 
 	@PostMapping("/product/add")
 	public ProductDto addProduct(@RequestBody ProductDto product) {
@@ -44,45 +46,46 @@ public class FarmerMarketController {
 	}
 
 	@PatchMapping("/farmer/product/add")
-	public FarmerDto addProductToFarmer(@RequestParam String farmerName, @RequestParam String productName,
-			@RequestParam int quantity) {
+	public FarmerDto addProductToFarmer(@RequestParam String productName, @RequestParam int quantity,
+			Principal principal) {
 		// TODO Auto-generated method stub
-		return fmService.addProductToFarmer(farmerName, productName, quantity);
+		return fmService.addProductToFarmer(productName, quantity, principal);
 	}
 
 	@PatchMapping("/farmer/product/sell")
-	public FarmerDto sellProductToClient(@RequestParam String clientEmail, @RequestParam String farmerName,
-			@RequestParam String productName, @RequestParam int quantity) {
+	public ClientDto sellProductToClient(@RequestParam String farmerName,
+			@RequestParam String productName, @RequestParam int quantity, Principal principal) {
 		// TODO Auto-generated method stub
-		return fmService.sellProductToClient(clientEmail, farmerName, productName, quantity);
+		return fmService.buyProductFromFarmer(farmerName, productName, quantity, principal);
 	}
-	
+
 	@GetMapping("/farmer/products")
 	public List<ProductInfoDto> getFarmerStock(@RequestParam String farmerName) {
 		// TODO Auto-generated method stub
 		return fmService.getFarmerStock(farmerName);
 	}
-	
+
 	@GetMapping("/farmers")
-	public List<FarmerDto> getAllFarmers(){
+	public List<FarmerDto> getAllFarmers() {
 		return fmService.getAllFarmers();
 	}
-	
+
 	@GetMapping("/clients")
-	public List<ClientDto> getAllClients(){
+	public List<ClientDto> getAllClients() {
 		return fmService.getAllClients();
 	}
-	
+
 	@GetMapping("/products")
-	public List<ProductDto> getAllProducts(){
+	public List<ProductDto> getAllProducts() {
 		return fmService.getAllProducts();
 	}
-	
+
+	// FIXME relocate remove logic to auth package and remove by email?
 	@DeleteMapping("/farmer/remove")
 	public FarmerDto removeFarmer(@RequestParam String farmerName) {
 		return fmService.removeFarmer(farmerName);
 	}
-	
+
 	@DeleteMapping("/client/remove")
 	public ClientDto removeClient(@RequestParam String clientEmail) {
 		return fmService.removeClient(clientEmail);

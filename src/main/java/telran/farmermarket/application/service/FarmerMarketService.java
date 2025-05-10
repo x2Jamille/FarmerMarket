@@ -1,5 +1,6 @@
 package telran.farmermarket.application.service;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,14 @@ public class FarmerMarketService implements IFarmerMarketService {
 	final ClientsRepository clientsRepo;
 	final FarmersRepository farmersRepo;
 	final ProductsRepository productsRepo;
+
+	private Farmer getFarmerByEmail(String email) {
+		Farmer farmer = farmersRepo.findByEmail(email);
+		if (farmer == null)
+			throw new RuntimeException("FARMER_NOT_EXISTS");
+		return farmer;
+	}
+	
 
 	private Farmer getFarmerByName(String name) {
 		Farmer farmer = farmersRepo.findByName(name);
@@ -38,7 +47,8 @@ public class FarmerMarketService implements IFarmerMarketService {
 			throw new RuntimeException("PRODUCT_NOT_EXISTS");
 		return product;
 	}
-
+	
+	
 	@Override
 	public ClientDto addClient(ClientDto clientDto) {
 		Client client = clientsRepo.findByEmail(clientDto.getEmail());
@@ -46,10 +56,11 @@ public class FarmerMarketService implements IFarmerMarketService {
 			throw new RuntimeException("ADD_CLIENT - EXISTS");
 		return clientsRepo.save(Client.of(clientDto)).build();
 	}
+	
 
 	@Override
 	public FarmerDto addFarmer(FarmerDto farmerDto) {
-		Farmer farmer = farmersRepo.findByName(farmerDto.getName());
+		Farmer farmer = farmersRepo.findByEmail(farmerDto.getEmail());
 		if (farmer != null)
 			throw new RuntimeException("ADD_FARMER - EXISTS");
 		return farmersRepo.save(Farmer.of(farmerDto)).build();
@@ -64,8 +75,8 @@ public class FarmerMarketService implements IFarmerMarketService {
 	}
 
 	@Override
-	public FarmerDto addProductToFarmer(String farmerName, String productName, int quantity) {
-		Farmer farmer = getFarmerByName(farmerName);
+	public FarmerDto addProductToFarmer(String productName, int quantity, Principal principal) {
+		Farmer farmer = getFarmerByEmail(principal.getName());
 		Product product = getProductByName(productName);
 
 		farmer.addProduct(new ProductInfo(product.getId(), product.getName(), quantity));
@@ -74,9 +85,11 @@ public class FarmerMarketService implements IFarmerMarketService {
 	}
 
 	@Override
+	@Deprecated
 	public FarmerDto sellProductToClient(String clientEmail, String farmerName, String productName, int quantity) {
+//		throw new
 		Client client = getClientByEmail(clientEmail);
-		Farmer farmer = getFarmerByName(farmerName);
+		Farmer farmer = getFarmerByEmail(farmerName);
 		Product product = getProductByName(productName);
 
 		ProductInfo productInStock = farmer.getStock().stream().filter(fp -> fp.getProductId().equals(product.getId()))
@@ -95,11 +108,36 @@ public class FarmerMarketService implements IFarmerMarketService {
 
 		return farmersRepo.save(farmer).build();
 	}
+	
+	
+	@Override
+	public ClientDto buyProductFromFarmer(String farmerName, String productName, int quantity, Principal principal) {
+		Client client = getClientByEmail(principal.getName());
+		Farmer farmer = getFarmerByName(farmerName);
+		Product product = getProductByName(productName);
+		
+		ProductInfo productInStock = farmer.getStock().stream().filter(fp -> fp.getProductId().equals(product.getId()))
+				.findFirst().orElseThrow(() -> new RuntimeException("BUY_PRODUCT_FROM_FARMER - PRODUCT_NOT_IN_STOCK"));
+		
+		if (productInStock.getQuantity() < quantity)
+			throw new RuntimeException("BUY_PRODUCT_FROM_FARMER - NOT_ENOUGH_IN_STOCK");
+		
+		productInStock.setQuantity(productInStock.getQuantity() - quantity);
+		
+		if (productInStock.getQuantity() == 0)
+			farmer.getStock().remove(productInStock);
+		farmersRepo.save(farmer).build();
+		
+		client.addProduct(new ProductInfo(product.getId(), product.getName(), quantity));
+		
+		return clientsRepo.save(client).build(); 
+	}
+
 
 	@Override
 	public List<ProductInfoDto> getFarmerStock(String farmerName) {
 		Farmer farmer = getFarmerByName(farmerName);
-		return farmer.getStock().stream().map(fp -> new ProductInfoDto()).collect(Collectors.toList());
+		return farmer.getStock().stream().map(fp -> new ProductInfoDto(fp.getProductId(), fp.getProductName(), fp.getQuantity())).collect(Collectors.toList());
 	}
 
 	@Override
@@ -119,7 +157,7 @@ public class FarmerMarketService implements IFarmerMarketService {
 
 	@Override
 	public FarmerDto removeFarmer(String farmerName) {
-		Farmer farmer = getFarmerByName(farmerName);
+		Farmer farmer = getFarmerByEmail(farmerName);
 		farmersRepo.delete(farmer);
 		return farmer.build();
 	}

@@ -1,5 +1,6 @@
 package telran.farmermarket.application.service;
 
+import java.security.Principal;
 import java.util.List;
 
 import telran.farmermarket.application.dto.*;
@@ -13,9 +14,11 @@ public interface IFarmerMarketService {
 
 	ProductDto addProduct(ProductDto productDto);
 
-	FarmerDto addProductToFarmer(String farmerName, String productName, int quantity);
-
+	FarmerDto addProductToFarmer(String productName, int quantity, Principal principal);
+	@Deprecated
 	FarmerDto sellProductToClient(String clientEmail, String farmerName, String productName, int quantity);
+	
+	ClientDto buyProductFromFarmer(String farmerName, String productName, int quantity, Principal principal);
 
 	List<ProductInfoDto> getFarmerStock(String farmerName);
 
